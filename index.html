@@ -1,0 +1,28 @@
+<form id="meta-major-form">
+    <label for="major">Enter Major:</label>
+    <input type="text" id="major" name="major" required>
+    <button type="submit">Generate Plan</button>
+</form>
+<div id="result"></div>
+
+<script>
+    document.getElementById("meta-major-form").onsubmit = async function (e) {
+        e.preventDefault();
+        const major = document.getElementById("major").value;
+        const response = await fetch("/generate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ major })
+        });
+        const data = await response.json();
+        const resultDiv = document.getElementById("result");
+        if (data.meta_major_plan) {
+            resultDiv.innerHTML = `<h3>Meta-Major Plan for ${data.major}</h3>`;
+            for (const [year, courses] of Object.entries(data.meta_major_plan)) {
+                resultDiv.innerHTML += `<strong>${year}:</strong> ${courses.join(", ")}<br>`;
+            }
+        } else {
+            resultDiv.textContent = data.error || "An error occurred.";
+        }
+    };
+</script>
